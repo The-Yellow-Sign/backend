@@ -20,7 +20,7 @@ jobs:
           python: "3.13"
 
       - name: Install Ruff
-        run: uv pip install ruff==0.7.3
+        run: uv pip install --system ruff==0.7.3
 
       - name: Ruff lint
         run: uv run ruff check .
@@ -42,7 +42,7 @@ jobs:
           python: "3.13"
 
       - name: Install pre-commit
-        run: uv pip install pre-commit
+        run: uv pip install --system pre-commit
 
       - name: Run Conventional Commit hook (same as local)
         run: uv run pre-commit run conventional-pre-commit --all-files
