@@ -51,4 +51,4 @@ jobs:
         run: uv pip install pre-commit
 
       - name: Run Conventional Commit hook (same as local)
-        run: uv run pre-commit run conventional-pre-commit --all-files
+        run: uv run pre-commit run --hook-stage commit-msg conventional-pre-commit --all-files
