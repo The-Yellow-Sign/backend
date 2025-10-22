@@ -39,16 +39,5 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python with uv
-        uses: astral-sh/setup-uv@v2
-        with:
-          python: "3.13"
-
-      - name: Create virtual environment
-        run: uv venv .venv
-
-      - name: Install pre-commit
-        run: uv pip install pre-commit
-
-      - name: Run Conventional Commit hook (same as local)
-        run: uv run pre-commit run --hook-stage commit-msg conventional-pre-commit --all-files
+      - name: Validate commit messages
+        uses: webiny/action-conventional-commits@v1.3.0
