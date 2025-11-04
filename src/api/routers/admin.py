@@ -1,9 +1,9 @@
 from typing import List
+
 from fastapi import APIRouter, Depends, status
 
 from src.api.dependencies import get_current_admin_user
 from src.api.schemas.admin import RoleCreate, UserResponse, UserRoleUpdate
-
 
 router_admin = APIRouter(
     dependencies=[Depends(get_current_admin_user)]

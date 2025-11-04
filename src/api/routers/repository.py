@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import List
+
 from fastapi import APIRouter, Depends, status
 
 from src.api.dependencies import get_current_admin_user
-from src.api.schemas.repository import RepoConfig, IndexingJob, Repository, SyncRequest
-
+from src.api.schemas.repository import IndexingJob, RepoConfig, Repository, SyncRequest
 
 router_repository = APIRouter(
     dependencies=[Depends(get_current_admin_user)]
@@ -15,14 +15,14 @@ async def configure_repo(config: RepoConfig):
     ...
 
 @router_repository.get(
-    "/list", 
+    "/list",
     response_model=List[Repository]
 )
 async def list_gitlab_repositories():
     ...
 
 @router_repository.post(
-    "/trigger", 
+    "/trigger",
     response_model=IndexingJob
 )
 async def trigger_indexing(sync_request: SyncRequest):
@@ -34,7 +34,7 @@ async def trigger_indexing(sync_request: SyncRequest):
     )
 
 @router_repository.get(
-    "/status/{job_id}", 
+    "/status/{job_id}",
     response_model=IndexingJob
 )
 async def get_indexing_status(job_id: str):

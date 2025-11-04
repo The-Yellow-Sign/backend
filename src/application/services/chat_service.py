@@ -12,7 +12,7 @@ class ChatService:
         return {
             "id": "valid uuid4",
             "role": "assistant",
-            "content": f"ответ на вопрос",
+            "content": "ответ на вопрос",
             "created_at": "datetime",
             "sources": [
                 {

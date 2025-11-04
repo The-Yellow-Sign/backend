@@ -1,6 +1,7 @@
-from pydantic import BaseModel, HttpUrl
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel
 
 from src.api.schemas.chat import Source
 
@@ -15,6 +16,6 @@ class Message(BaseModel):
 class Chat(BaseModel):
     id: int
     title: str
-    owner_id: int 
+    owner_id: int
     created_at: datetime
     messages: List[Message] = []

@@ -1,19 +1,26 @@
 from datetime import datetime
 from typing import List
+
 from fastapi import APIRouter, Body, Depends, status
 
 from src.api.dependencies import get_current_user
 from src.api.schemas.auth import UserInDB
-from src.api.schemas.chat import ChatBase, ChatHistoryResponse, ChatResponse, MessageCreate, MessageResponse, Source
-
+from src.api.schemas.chat import (
+    ChatBase,
+    ChatHistoryResponse,
+    ChatResponse,
+    MessageCreate,
+    MessageResponse,
+    Source,
+)
 
 router_chat = APIRouter(
     dependencies=[Depends(get_current_user)]
 )
 
 @router_chat.post(
-    "/", 
-    response_model=ChatResponse, 
+    "/",
+    response_model=ChatResponse,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_new_chat(
@@ -30,7 +37,7 @@ async def get_chat_history(chat_id: int):
     ...
 
 @router_chat.post(
-    "/{chat_id}/message", 
+    "/{chat_id}/message",
     response_model=MessageResponse,
 )
 async def post_message(chat_id: int, message: MessageCreate):

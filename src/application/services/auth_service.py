@@ -12,9 +12,9 @@ class AuthService:
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        
+
         if is_admin:
-            token_content = "fake_admin_token" 
+            token_content = "fake_admin_token"
         else:
             token_content = f"fake_token_for_{username}"
 

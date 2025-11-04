@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
-from src.api.routers import admin, auth, chat, repository 
+
+from src.api.routers import admin, auth, chat, repository
 
 app = FastAPI(
     title="Скелет",

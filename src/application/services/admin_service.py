@@ -1,7 +1,8 @@
 from typing import List
+
 from fastapi import HTTPException, status
 
-from src.domain.models.user import User, Role
+from src.domain.models.user import Role, User
 
 
 class AdminService:
@@ -14,14 +15,14 @@ class AdminService:
     async def update_user_role(self, user_id: int, role_name: str) -> User:
         if user_id == 2:
             return User(
-                id=2, 
-                username="test_user", 
-                email="test@example.com", 
+                id=2,
+                username="test_user",
+                email="test@example.com",
                 role=role_name
             )
 
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, 
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with id {user_id} not found or cannot be modified"
         )
 

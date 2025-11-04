@@ -1,8 +1,9 @@
-from typing import List
-from pydantic import HttpUrl, SecretStr
 from datetime import datetime
+from typing import List
 
-from src.domain.models.knowledge import Repository, IndexingJob
+from pydantic import HttpUrl, SecretStr
+
+from src.domain.models.knowledge import IndexingJob, Repository
 
 
 class IndexService:
@@ -34,7 +35,7 @@ class IndexService:
             triggered_at=datetime.now(),
             details=f"Job submitted for repos: {repository_ids}"
         )
-        
+
     async def get_indexing_status(self, job_id: str) -> IndexingJob:
         return IndexingJob(
             job_id=job_id,
