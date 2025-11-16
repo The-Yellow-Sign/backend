@@ -11,12 +11,15 @@ router_admin = APIRouter(
 
 @router_admin.get("/users", response_model=List[UserResponse])
 async def get_all_users():
+    """Get all users from database."""
     ...
 
 @router_admin.put("/users/{user_id}/role", response_model=UserResponse)
 async def update_user_role(user_id: int, role_update: UserRoleUpdate):
+    """Update user role."""
     ...
 
 @router_admin.post("/roles", status_code=status.HTTP_201_CREATED)
 async def create_new_role(role: RoleCreate):
+    """Create new custom role with list of permissions."""
     ...

@@ -5,6 +5,9 @@ from pydantic import BaseModel, HttpUrl
 
 
 class Repository(BaseModel):
+
+    """Data structure for repository."""
+
     id: int
     name: str
     path_with_namespace: str
@@ -12,6 +15,9 @@ class Repository(BaseModel):
 
 
 class IndexingJob(BaseModel):
+
+    """Data structure for an existing indexing job."""
+
     job_id: str
     status: str
     triggered_at: datetime

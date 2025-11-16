@@ -9,6 +9,7 @@ from src.domain.models.user import User
 router = APIRouter()
 
 def get_auth_service() -> AuthService:
+    """Get AuthService instance."""
     return AuthService()
 
 
@@ -20,6 +21,7 @@ async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     auth_service: AuthService = Depends(get_auth_service)
 ):
+    """Authenticate user by login and password and return a JWT token."""
     token_data = await auth_service.authenticate_user(
         username=form_data.username,
         password=form_data.password
@@ -35,4 +37,5 @@ async def login_for_access_token(
 async def read_users_me(
     current_user: User = Depends(get_current_user)
 ):
+    """Get information about current user."""
     return current_user

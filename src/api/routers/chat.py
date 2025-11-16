@@ -26,14 +26,17 @@ router_chat = APIRouter(
 async def create_new_chat(
     title_body: ChatBase = Body(..., example={"title": "какое-то название чата"})
 ):
+    """Create new chat with a title."""
     ...
 
 @router_chat.get("/", response_model=List[ChatResponse])
 async def get_user_chats(current_user: UserInDB = Depends(get_current_user)):
+    """Get all chat for a specific user."""
     ...
 
 @router_chat.get("/{chat_id}", response_model=ChatHistoryResponse)
 async def get_chat_history(chat_id: int):
+    """Get chat history by chat_id."""
     ...
 
 @router_chat.post(
@@ -41,6 +44,13 @@ async def get_chat_history(chat_id: int):
     response_model=MessageResponse,
 )
 async def post_message(chat_id: int, message: MessageCreate):
+    """Handle the user's message and generate a response.
+
+    1. Save user's message to database
+    2. Send request to RAG
+    3. Save response and sources to database
+    4. Return response to user.
+    """
     fake_llm_response = MessageResponse(
         id=999,
         role="assistant",

@@ -12,6 +12,7 @@ router_repository = APIRouter(
 
 @router_repository.post("/", status_code=status.HTTP_202_ACCEPTED)
 async def configure_repo(config: RepoConfig):
+    """Save repo's link and private token."""
     ...
 
 @router_repository.get(
@@ -19,6 +20,7 @@ async def configure_repo(config: RepoConfig):
     response_model=List[Repository]
 )
 async def list_gitlab_repositories():
+    """Get list of repositories that are available for indexing."""
     ...
 
 @router_repository.post(
@@ -26,6 +28,7 @@ async def list_gitlab_repositories():
     response_model=IndexingJob
 )
 async def trigger_indexing(sync_request: SyncRequest):
+    """Start an indexing of repositories by their ids."""
     return IndexingJob(
         job_id="12345",
         status="PENDING",
@@ -38,4 +41,5 @@ async def trigger_indexing(sync_request: SyncRequest):
     response_model=IndexingJob
 )
 async def get_indexing_status(job_id: str):
+    """Get status of indexing job by its id."""
     ...

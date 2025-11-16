@@ -6,13 +6,18 @@ from src.domain.models.user import Role, User
 
 
 class AdminService:
+
+    """Provides methods for managing users, roles, and permissions."""
+
     async def get_all_users(self) -> List[User]:
+        """Get all users from database."""
         return [
             User(id=1, username="admin_user", email="admin@example.com", role="admin"),
             User(id=2, username="test_user", email="test@example.com", role="user"),
         ]
 
     async def update_user_role(self, user_id: int, role_name: str) -> User:
+        """Update user role by user_id."""
         if user_id == 2:
             return User(
                 id=2,
@@ -27,6 +32,7 @@ class AdminService:
         )
 
     async def create_new_role(self, name: str, permissions: List[str]) -> Role:
+        """Create new custom role."""
         return Role(
             id=99,
             name=name,
