@@ -14,9 +14,8 @@ from src.api.schemas.chat import (
     Source,
 )
 
-router_chat = APIRouter(
-    dependencies=[Depends(get_current_user)]
-)
+router_chat = APIRouter(dependencies=[Depends(get_current_user)])
+
 
 @router_chat.post(
     "/",
@@ -24,20 +23,23 @@ router_chat = APIRouter(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_new_chat(
-    title_body: ChatBase = Body(..., example={"title": "какое-то название чата"})
+    title_body: ChatBase = Body(..., example={"title": "какое-то название чата"}),
 ):
     """Create new chat with a title."""
     ...
+
 
 @router_chat.get("/", response_model=List[ChatResponse])
 async def get_user_chats(current_user: UserInDB = Depends(get_current_user)):
     """Get all chat for a specific user."""
     ...
 
+
 @router_chat.get("/{chat_id}", response_model=ChatHistoryResponse)
 async def get_chat_history(chat_id: int):
     """Get chat history by chat_id."""
     ...
+
 
 @router_chat.post(
     "/{chat_id}/message",
@@ -60,8 +62,8 @@ async def post_message(chat_id: int, message: MessageCreate):
             Source(
                 document_title="DEPLOYMENT.md",
                 repository_url="https://gitlab.example.com/project/repo",
-                content="тут текст из мд файла"
+                content="тут текст из мд файла",
             )
-        ]
+        ],
     )
     return fake_llm_response

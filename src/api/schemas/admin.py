@@ -12,11 +12,25 @@ class RoleCreate(BaseModel):
     name: str = Field(...)
     permissions: List[str] = Field(..., example=["read:repo:project_x", "chat:use"])
 
+
+class RoleResponse(BaseModel):
+
+    """Data structure for information about role."""
+
+    id: int
+    name: str
+    permissions: List[str]
+
+    class Config: # noqa: D106
+        from_attributes = True
+
+
 class UserRoleUpdate(BaseModel):
 
     """Data structure for updating role for existing user."""
 
     role: str = Field(..., example="admin")
+
 
 class UserResponse(UserBase):
 
@@ -24,3 +38,6 @@ class UserResponse(UserBase):
 
     id: int
     role: str
+
+    class Config: # noqa: D106
+        from_attributes = True

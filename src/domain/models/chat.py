@@ -16,6 +16,7 @@ class Message(BaseModel):
     created_at: datetime
     sources: Optional[List[Source]] = None
 
+
 class Chat(BaseModel):
 
     """Data structure fot chat response."""

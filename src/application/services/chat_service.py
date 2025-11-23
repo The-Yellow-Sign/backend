@@ -33,7 +33,7 @@ class ChatService:
                 {
                     "document_title": "MOCK_README.md",
                     "repository_url": "https://gitlab.example.com/mock/repo",
-                    "content": "... мок-цитата ..."
+                    "content": "... мок-цитата ...",
                 }
-            ]
+            ],
         }

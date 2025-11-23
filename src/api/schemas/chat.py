@@ -8,7 +8,7 @@ class SourceMeta(BaseModel):
 
     """Data structure for custom metafields. Can be used for filtering in retrieval scenario."""
 
-    pass # можно добавить кастомные поля для применения фильтрации при поиске
+    pass  # можно добавить кастомные поля для применения фильтрации при поиске
 
 
 class Source(BaseModel):
@@ -43,7 +43,7 @@ class MessageResponse(MessageBase):
     id: int
     role: str = Field(..., example="user")
     created_at: datetime
-    sources: Optional[List[Source]] = None # только для assistant роли?
+    sources: Optional[List[Source]] = None  # только для assistant роли?
 
 
 class ChatBase(BaseModel):

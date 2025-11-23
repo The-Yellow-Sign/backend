@@ -22,7 +22,7 @@ class Repository(BaseModel):
     web_url: HttpUrl
 
 
-class SyncRequest(BaseModel): # разделить на два разных типа - одиночный и multi?
+class SyncRequest(BaseModel):  # разделить на два разных типа - одиночный и multi?
 
     """Data strucuture for repositories indexing request."""
 
@@ -36,4 +36,4 @@ class IndexingJob(BaseModel):
     job_id: str
     status: str = Field(..., example="RUNNING")
     triggered_at: datetime
-    details: Optional[str] = None # возможно мета инфа
+    details: Optional[str] = None  # возможно мета инфа

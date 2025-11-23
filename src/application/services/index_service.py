@@ -22,14 +22,14 @@ class IndexService:
                 id=1,
                 name="Project Alpha",
                 path_with_namespace="group-1/project-alpha",
-                web_url="https://gitlab.example.com/group-1/project-alpha"
+                web_url="https://gitlab.example.com/group-1/project-alpha",
             ),
             Repository(
                 id=2,
                 name="Project Beta (Docs)",
                 path_with_namespace="group-2/project-beta",
-                web_url="https://gitlab.example.com/group-2/project-beta"
-            )
+                web_url="https://gitlab.example.com/group-2/project-beta",
+            ),
         ]
 
     async def trigger_indexing(self, repository_ids: List[int]) -> IndexingJob:
@@ -39,7 +39,7 @@ class IndexService:
             job_id="mock_job_id",
             status="PENDING",
             triggered_at=datetime.now(),
-            details=f"Job submitted for repos: {repository_ids}"
+            details=f"Job submitted for repos: {repository_ids}",
         )
 
     async def get_indexing_status(self, job_id: str) -> IndexingJob:
@@ -48,5 +48,5 @@ class IndexService:
             job_id=job_id,
             status="RUNNING",
             triggered_at=datetime.now() - datetime.timedelta(minutes=5),
-            details="Step 2/5: Cloning repositories..."
+            details="Step 2/5: Cloning repositories...",
         )
