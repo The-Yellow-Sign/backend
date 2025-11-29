@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     DATABASE_URL: SecretStr
 
     SECRET_KEY: SecretStr
+    ENCRYPTION_KEY: SecretStr
+    MLOPS_SERVICE_URL: SecretStr
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 

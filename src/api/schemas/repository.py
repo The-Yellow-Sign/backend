@@ -1,15 +1,15 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import UUID4, BaseModel, Field, HttpUrl, SecretStr
+from pydantic import UUID4, BaseModel, Field, HttpUrl
 
 
-class RepoConfig(BaseModel):
+class GitLabConfigCreate(BaseModel):
 
-    """Data structuture for repository connection settings."""
+    """Data structure for GitLab config create schema."""
 
-    instance_url: HttpUrl = Field(...)
-    private_token: SecretStr = Field(...)
+    url: str = Field(...)
+    private_token: str = Field(...)
 
 
 class Repository(BaseModel):
@@ -33,7 +33,7 @@ class IndexingJob(BaseModel):
 
     """Data structure for an existing indexing job."""
 
-    job_id: str
+    id: UUID4
     status: str = Field(..., example="RUNNING")
     triggered_at: datetime
     details: Optional[str] = None  # возможно мета инфа
