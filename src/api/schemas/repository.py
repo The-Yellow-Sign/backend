@@ -3,6 +3,8 @@ from typing import List, Optional
 
 from pydantic import UUID4, BaseModel, Field, HttpUrl
 
+from src.domain.models.knowledge import JobStatus
+
 
 class GitLabConfigCreate(BaseModel):
 
@@ -34,6 +36,15 @@ class IndexingJob(BaseModel):
     """Data structure for an existing indexing job."""
 
     id: UUID4
-    status: str = Field(..., example="RUNNING")
-    triggered_at: datetime
+    status: JobStatus
+    repository_ids: List[str]
+    created_at: datetime
+    finished_at: Optional[datetime] = None
     details: Optional[str] = None  # возможно мета инфа
+
+
+class JobStatusUpdate(BaseModel):
+
+    """Data structure for job's status updating."""
+
+    status: JobStatus = Field(..., description="New job's status")

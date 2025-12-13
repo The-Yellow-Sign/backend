@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from fastapi import HTTPException, status
 
-from src.api.schemas.repository import IndexingJob as IndexingJobSchema
+from src.api.schemas.repository import IndexingJob as IndexingJobSchema, JobStatusUpdate
 from src.core.settings import settings
 from src.domain.models.knowledge import Repository
 from src.domain.repositories.gitlab_repo import IGitLabRepository
@@ -77,15 +77,25 @@ class IndexService:
 
         return job_info
 
+    async def delete_indexind_job(self, job_id: str) -> bool:
+        """Delete an existing job by its id.
+
+        Return true if deleted, false if the job doesn't exist.
+        """
+        operation_result = await self.job_repo.delete_job(job_id)
+        if operation_result:
+            return {"status": "ok", "message": f"Job {job_id} has been deleted successfully."}
+
+        return {"status": "error", "message": f"Job {job_id} doesn't exist."}
+
     async def get_indexing_status(self, job_id: str) -> Optional[IndexingJobSchema]:
         """Get status for existing indexing job."""
-        job = await self.job_repo.get_job(job_id)
-        if not job:
-            return None
+        return await self.job_repo.get_job(job_id)
 
-        return IndexingJobSchema(
-            id=job.id,
-            status=job.status,
-            triggered_at=job.created_at,
-            details=job.details
-        )
+    async def update_indexing_status(
+            self,
+            job_id: str,
+            status_update: JobStatusUpdate
+    ) -> Optional[IndexingJobSchema]:
+        """Update a status of an existing job by its id."""
+        return await self.job_repo.update_job_status(job_id, status_update.status)

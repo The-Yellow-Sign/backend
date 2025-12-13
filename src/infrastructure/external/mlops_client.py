@@ -21,6 +21,6 @@ class MLOpsClient:
         return IndexingJob(
             id=str(uuid.uuid4()),
             status="RUNNING",
-            triggered_at=datetime.now(),
+            created_at=datetime.now(),
             details=f"Mock triggered for repos {repo_ids}"
         )
