@@ -1,6 +1,7 @@
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from fastapi import HTTPException, status
+from pydantic import UUID4
 
 from src.api.schemas.repository import IndexingJob as IndexingJobSchema, JobStatusUpdate
 from src.core.settings import settings
@@ -27,7 +28,7 @@ class IndexService:
             self.gitlab_client = GitLabClient()
             self.mlops_client = MLOpsClient(base_url=settings.MLOPS_SERVICE_URL.get_secret_value())
 
-    async def configure_gitlab(self, url: str, private_token: str):
+    async def configure_gitlab(self, url: str, private_token: str) -> Dict[str, str]:
         """Set up url and token (by encripting the original one) for GitLab."""
         encrypted_token = encrypt_data(private_token)
 
@@ -51,7 +52,7 @@ class IndexService:
             token=raw_token
         )
 
-    async def trigger_indexing(self, repository_ids: List[int]) -> IndexingJobSchema:
+    async def trigger_indexing(self, repository_ids: List[UUID4]) -> IndexingJobSchema:
         """Trigger and run indexing service."""
         config = await self.gitlab_repo.get_config()
         if not config:

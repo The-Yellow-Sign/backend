@@ -1,3 +1,4 @@
+import uuid
 from typing import Optional
 
 from fastapi import Depends, HTTPException, status
@@ -6,12 +7,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.services.admin_service import AdminService
 from src.application.services.auth_service import AuthService
+from src.application.services.chat_service import ChatService
 from src.application.services.index_service import IndexService
 from src.domain.models.user import User as DomainUser
+from src.domain.repositories.chat_repo import IChatRepository
 from src.domain.repositories.gitlab_repo import IGitLabRepository
 from src.domain.repositories.job_repo import IJobRepository
 from src.domain.repositories.role_repo import IRoleRepository
 from src.domain.repositories.user_repo import IUserRepository
+from src.infrastructure.db.repositories.sqlalchemy_chat_repo import SqlAlchemyChatRepository
 from src.infrastructure.db.repositories.sqlalchemy_gitlab_repo import SqlAlchemyGitLabRepository
 from src.infrastructure.db.repositories.sqlalchemy_job_repo import SqlAlchemyJobRepository
 from src.infrastructure.db.repositories.sqlalchemy_role_repo import SqlAlchemyRoleRepository
@@ -30,6 +34,16 @@ def get_user_repository(db: AsyncSession = Depends(get_db_session)) -> IUserRepo
 def get_auth_service(user_repo: IUserRepository = Depends(get_user_repository)) -> AuthService:
     """Get auth service."""
     return AuthService(user_repo=user_repo)
+
+
+def get_chat_repository(db: AsyncSession = Depends(get_db_session)) -> IChatRepository:
+    """Get chat's repository."""
+    return SqlAlchemyChatRepository(session=db)
+
+
+def get_chat_service(chat_repo: IUserRepository = Depends(get_chat_repository)) -> ChatService:
+    """Get chat's service."""
+    return ChatService(chat_repo=chat_repo)
 
 
 def get_role_repository(db: AsyncSession = Depends(get_db_session)) -> IRoleRepository:
@@ -82,7 +96,7 @@ async def get_current_user(
         raise credentials_exception
 
     try:
-        user_id = int(user_id_str)
+        user_id = uuid.UUID(user_id_str)
     except ValueError as error:
         raise credentials_exception from error
 

@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, status
+from pydantic import UUID4
 
 from src.api.dependencies import get_admin_service, get_current_admin_user
 from src.api.schemas.admin import RoleCreate, RoleResponse, UserResponse, UserRoleUpdate
@@ -23,7 +24,7 @@ async def get_all_roles(admin_service: AdminService = Depends(get_admin_service)
 
 @router_admin.put("/users/{user_id}/role", response_model=UserResponse)
 async def update_user_role(
-    user_id: int,
+    user_id: UUID4,
     role_update: UserRoleUpdate,
     admin_service: AdminService = Depends(get_admin_service),
 ):

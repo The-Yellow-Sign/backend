@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime
 
+from pydantic import UUID4
+
 from src.api.schemas.repository import IndexingJob
 
 
@@ -13,7 +15,7 @@ class MLOpsClient:
 
     async def trigger_indexing(
         self,
-        repo_ids: list[int],
+        repo_ids: list[UUID4],
         gitlab_url: str,
         gitlab_token: str
     ) -> IndexingJob:
@@ -21,6 +23,7 @@ class MLOpsClient:
         return IndexingJob(
             id=str(uuid.uuid4()),
             status="RUNNING",
+            repository_ids=repo_ids,
             created_at=datetime.now(),
             details=f"Mock triggered for repos {repo_ids}"
         )

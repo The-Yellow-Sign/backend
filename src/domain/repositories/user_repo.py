@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from pydantic import EmailStr
+from pydantic import UUID4, EmailStr
 
 from src.domain.models.user import User as DomainUser
 
@@ -26,7 +26,7 @@ class IUserRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_by_id(self, user_id: int) -> Optional[DomainUser]:
+    async def get_by_id(self, user_id: UUID4) -> Optional[DomainUser]:
         """Retrieve user from db by id."""
         raise NotImplementedError
 

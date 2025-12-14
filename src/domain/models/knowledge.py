@@ -21,7 +21,7 @@ class GitLabConfigModel(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
+    id: UUID4
     url: str
 
 
@@ -43,7 +43,7 @@ class IndexingJob(BaseModel):
 
     id: UUID4
     status: JobStatus
-    repository_ids: List[str]
+    repository_ids: List[UUID4]
     created_at: datetime
     finished_at: Optional[datetime] = None
     details: Optional[str] = None

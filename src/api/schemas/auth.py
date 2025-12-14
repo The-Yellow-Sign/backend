@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import UUID4, BaseModel, EmailStr
 
 
 class Token(BaseModel):
@@ -21,7 +21,7 @@ class UserInDB(UserBase):
 
     """Data structure for ful user information fields."""
 
-    id: int
+    id: UUID4
     role: str = "user"
 
 

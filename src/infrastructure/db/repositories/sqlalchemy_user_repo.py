@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from pydantic import EmailStr
+from pydantic import UUID4, EmailStr
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -45,7 +45,7 @@ class SqlAlchemyUserRepository(IUserRepository):
             return DomainUser.model_validate(orm_user)
         return None
 
-    async def get_by_id(self, user_id: int) -> Optional[DomainUser]:
+    async def get_by_id(self, user_id: UUID4) -> Optional[DomainUser]:
         """Retrieve user from db by username."""
         stmt = select(ORMUser).where(ORMUser.id == user_id)
         result = await self.session.execute(stmt)

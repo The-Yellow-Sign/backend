@@ -1,6 +1,8 @@
+import uuid
 from typing import List
 
 from fastapi import HTTPException, status
+from pydantic import UUID4
 
 from src.api.schemas.admin import RoleCreate
 from src.domain.models.user import Role as DomainRole, User as DomainUser
@@ -24,7 +26,7 @@ class AdminService:
         """Get all roles from database."""
         return await self.role_repo.get_all_roles()
 
-    async def update_user_role(self, user_id: int, role_name: str) -> DomainUser:
+    async def update_user_role(self, user_id: UUID4, role_name: str) -> DomainUser:
         """Update user role by user_id."""
         user = await self.user_repo.get_by_id(user_id)
         if not user:
@@ -53,7 +55,11 @@ class AdminService:
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Role already exists"
             )
 
-        new_role = DomainRole(id=0, name=role_create.name, permissions=role_create.permissions)
+        new_role = DomainRole(
+            id=uuid.uuid4(),
+            name=role_create.name,
+            permissions=role_create.permissions
+        )
 
         created_role = await self.role_repo.create(new_role)
         if not created_role:

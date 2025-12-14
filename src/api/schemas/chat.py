@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import UUID4, BaseModel, Field, HttpUrl
+from pydantic import UUID4, BaseModel, ConfigDict, Field
 
 
 class SourceMeta(BaseModel):
@@ -15,11 +15,9 @@ class Source(BaseModel):
 
     """Data structure for source information."""
 
-    document_title: str = Field(...)
-    document_id: UUID4 = Field(...)
-    repository_url: HttpUrl = Field(...)
-    content: str = Field(...)
-    metadata: SourceMeta = Field(...)
+    title: str
+    url: str
+    quote: str | None = None
 
 
 class MessageBase(BaseModel):
@@ -40,7 +38,9 @@ class MessageResponse(MessageBase):
 
     """Data structure for an existing LLM message."""
 
-    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID4
     role: str = Field(..., example="user")
     created_at: datetime
     sources: Optional[List[Source]] = None  # только для assistant роли?
@@ -57,9 +57,11 @@ class ChatResponse(ChatBase):
 
     """Data structure fot chat response."""
 
-    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID4
     created_at: datetime
-    owner_id: int
+    owner_id: UUID4
 
 
 class ChatHistoryResponse(ChatResponse):

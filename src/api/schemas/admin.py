@@ -1,6 +1,6 @@
 from typing import List
 
-from pydantic import BaseModel, Field
+from pydantic import UUID4, BaseModel, Field
 
 from src.api.schemas.auth import UserBase
 
@@ -17,7 +17,7 @@ class RoleResponse(BaseModel):
 
     """Data structure for information about role."""
 
-    id: int
+    id: UUID4
     name: str
     permissions: List[str]
 
@@ -36,7 +36,7 @@ class UserResponse(UserBase):
 
     """Data structure for information about user."""
 
-    id: int
+    id: UUID4
     role: str
 
     class Config: # noqa: D106

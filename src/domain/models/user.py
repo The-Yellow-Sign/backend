@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import UUID4, BaseModel, ConfigDict, EmailStr
 
 
 class User(BaseModel):
@@ -9,7 +9,7 @@ class User(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
+    id: UUID4
     username: str
     email: Optional[EmailStr] = None
     role: str
@@ -22,6 +22,6 @@ class Role(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
+    id: UUID4
     name: str
     permissions: List[str]

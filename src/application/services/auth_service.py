@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import HTTPException, status
 
 from src.api.schemas.auth import UserRegistration
@@ -35,7 +37,7 @@ class AuthService:
 
         hashed_password = get_password_hash(user_registration.password)
         new_user = DomainUser(
-            id=0,
+            id=uuid.uuid4(),
             username=user_registration.username,
             email=user_registration.email,
             role="user",
