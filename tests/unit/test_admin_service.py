@@ -189,7 +189,7 @@ async def test_create_new_role_success(
         permissions=permissions
     )
 
-    mocker.patch("uuid.uuid4", return_value=fixed_uuid)
+    mocker.patch("src.infrastructure.db.models.base.uuid.uuid4", return_value=fixed_uuid)
     mock_role_repo.get_by_name.return_value = None
     mock_role_repo.create.return_value = new_role
 
