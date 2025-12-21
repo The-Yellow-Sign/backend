@@ -21,6 +21,25 @@ services:
       timeout: 5s
       retries: 5
 
+  db_test:
+    image: postgres:15-alpine
+    container_name: gitlab-db-test
+    restart: always
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mysecretpassword}
+      POSTGRES_DB: test_db
+
+    ports:
+      - "5433:5432"
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d test_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     container_name: gitlab-backend
     

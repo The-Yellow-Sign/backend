@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     VERSION: str = "0.1.0"
 
     DATABASE_URL: SecretStr
+    TEST_DATABASE_URL: SecretStr
 
     SECRET_KEY: SecretStr
     ENCRYPTION_KEY: SecretStr
