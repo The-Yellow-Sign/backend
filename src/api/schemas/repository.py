@@ -1,15 +1,17 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import UUID4, BaseModel, Field, HttpUrl, SecretStr
+from pydantic import UUID4, BaseModel, Field, HttpUrl
+
+from src.domain.models.knowledge import JobStatus
 
 
-class RepoConfig(BaseModel):
+class GitLabConfigCreate(BaseModel):
 
-    """Data structuture for repository connection settings."""
+    """Data structure for GitLab config create schema."""
 
-    instance_url: HttpUrl = Field(...)
-    private_token: SecretStr = Field(...)
+    url: str = Field(...)
+    private_token: str = Field(...)
 
 
 class Repository(BaseModel):
@@ -22,7 +24,7 @@ class Repository(BaseModel):
     web_url: HttpUrl
 
 
-class SyncRequest(BaseModel): # разделить на два разных типа - одиночный и multi?
+class SyncRequest(BaseModel):  # разделить на два разных типа - одиночный и multi?
 
     """Data strucuture for repositories indexing request."""
 
@@ -33,7 +35,16 @@ class IndexingJob(BaseModel):
 
     """Data structure for an existing indexing job."""
 
-    job_id: str
-    status: str = Field(..., example="RUNNING")
-    triggered_at: datetime
-    details: Optional[str] = None # возможно мета инфа
+    id: UUID4
+    status: JobStatus
+    repository_ids: List[UUID4]
+    created_at: datetime
+    finished_at: Optional[datetime] = None
+    details: Optional[str] = None  # возможно мета инфа
+
+
+class JobStatusUpdate(BaseModel):
+
+    """Data structure for job's status updating."""
+
+    status: JobStatus = Field(..., description="New job's status")

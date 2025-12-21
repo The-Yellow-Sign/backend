@@ -1,52 +1,102 @@
-from datetime import datetime
-from typing import List
+from typing import Dict, List, Optional
 
-from pydantic import HttpUrl, SecretStr
+from fastapi import HTTPException, status
+from pydantic import UUID4
 
-from src.domain.models.knowledge import IndexingJob, Repository
+from src.api.schemas.repository import IndexingJob as IndexingJobSchema, JobStatusUpdate
+from src.core.settings import settings
+from src.domain.models.knowledge import Repository
+from src.domain.repositories.gitlab_repo import IGitLabRepository
+from src.domain.repositories.job_repo import IJobRepository
+from src.infrastructure.external.gitlab_client import GitLabClient
+from src.infrastructure.external.mlops_client import MLOpsClient
+from src.infrastructure.security.encription import decrypt_data, encrypt_data
 
 
 class IndexService:
 
     """Provides methods for GitLab indexing service."""
 
-    async def update_gitlab_config(self, instance_url: HttpUrl, private_token: SecretStr):
-        """Save GitLab credentials in database."""
-        # сохранение урла к репе + токена
-        return {"status": "ok", "message": "GitLab configuration updated."}
+    def __init__(
+            self,
+            gitlab_repo: IGitLabRepository,
+            job_repo: IJobRepository
+    ):
+            self.gitlab_repo = gitlab_repo
+            self.job_repo = job_repo
 
-    async def get_gitlab_repositories(self) -> List[Repository]:
+            self.gitlab_client = GitLabClient()
+            self.mlops_client = MLOpsClient(base_url=settings.MLOPS_SERVICE_URL.get_secret_value())
+
+    async def configure_gitlab(self, url: str, private_token: str) -> Dict[str, str]:
+        """Set up url and token (by encripting the original one) for GitLab."""
+        encrypted_token = encrypt_data(private_token)
+
+        await self.gitlab_repo.save_config(url, encrypted_token)
+
+        return {"status": "ok", "message": "GitLab configuration saved successfully."}
+
+    async def list_repositories(self) -> List[Repository]:
         """Get all repositories for given GitLab instance."""
-        return [
-            Repository(
-                id=1,
-                name="Project Alpha",
-                path_with_namespace="group-1/project-alpha",
-                web_url="https://gitlab.example.com/group-1/project-alpha"
-            ),
-            Repository(
-                id=2,
-                name="Project Beta (Docs)",
-                path_with_namespace="group-2/project-beta",
-                web_url="https://gitlab.example.com/group-2/project-beta"
+        config = await self.gitlab_repo.get_config()
+        if not config:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="GitLab is not configured yet. Please add config first."
             )
-        ]
 
-    async def trigger_indexing(self, repository_ids: List[int]) -> IndexingJob:
+        raw_token = decrypt_data(config.private_token_encrypted)
+
+        return await self.gitlab_client.list_projects(
+            base_url=config.url,
+            token=raw_token
+        )
+
+    async def trigger_indexing(self, repository_ids: List[UUID4]) -> IndexingJobSchema:
         """Trigger and run indexing service."""
-        # дергает пайп с индексацией репозитория
-        return IndexingJob(
-            job_id="mock_job_id",
-            status="PENDING",
-            triggered_at=datetime.now(),
-            details=f"Job submitted for repos: {repository_ids}"
+        config = await self.gitlab_repo.get_config()
+        if not config:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="GitLab is not configured yet. You should configure it first."
+            )
+
+        decrypted_token = decrypt_data(config.private_token_encrypted)
+
+        job_info = await self.mlops_client.trigger_indexing(
+            repo_ids=repository_ids,
+            gitlab_url=config.url,
+            gitlab_token=decrypted_token
         )
 
-    async def get_indexing_status(self, job_id: str) -> IndexingJob:
-        """Get status for existing indexing job."""
-        return IndexingJob(
-            job_id=job_id,
-            status="RUNNING",
-            triggered_at=datetime.now() - datetime.timedelta(minutes=5),
-            details="Step 2/5: Cloning repositories..."
+        await self.job_repo.create_job(
+            job_id=job_info.id,
+            repo_ids=repository_ids,
+            status=job_info.status,
+            details=job_info.details
         )
+
+        return job_info
+
+    async def delete_indexind_job(self, job_id: str) -> bool:
+        """Delete an existing job by its id.
+
+        Return true if deleted, false if the job doesn't exist.
+        """
+        operation_result = await self.job_repo.delete_job(job_id)
+        if operation_result:
+            return {"status": "ok", "message": f"Job {job_id} has been deleted successfully."}
+
+        return {"status": "error", "message": f"Job {job_id} doesn't exist."}
+
+    async def get_indexing_status(self, job_id: str) -> Optional[IndexingJobSchema]:
+        """Get status for existing indexing job."""
+        return await self.job_repo.get_job(job_id)
+
+    async def update_indexing_status(
+            self,
+            job_id: str,
+            status_update: JobStatusUpdate
+    ) -> Optional[IndexingJobSchema]:
+        """Update a status of an existing job by its id."""
+        return await self.job_repo.update_job_status(job_id, status_update.status)
