@@ -23,7 +23,9 @@ ignore = [
     # Docstring rules
     "D100", "D104", "D105", "D107", "D211",
     # Formatting & spacing
-    "D213"
+    "D213",
+    # Function call in argument defaults
+    "B008"
 ]
 fixable = ["ALL"]
 
