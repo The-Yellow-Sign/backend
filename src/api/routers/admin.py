@@ -1,23 +1,27 @@
 from typing import List
 
+from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, Depends, status
 from pydantic import UUID4
 
-from src.api.dependencies import get_admin_service, get_current_admin_user
+from src.api.dependencies import get_current_admin_user
 from src.api.schemas.admin import RoleCreate, RoleResponse, UserResponse, UserRoleUpdate
 from src.application.services.admin_service import AdminService
 
-router_admin = APIRouter(dependencies=[Depends(get_current_admin_user)])
+router_admin = APIRouter(
+    dependencies=[Depends(get_current_admin_user)],
+    route_class=DishkaRoute
+)
 
 
 @router_admin.get("/users", response_model=List[UserResponse])
-async def get_all_users(admin_service: AdminService = Depends(get_admin_service)):
+async def get_all_users(admin_service: FromDishka[AdminService]):
     """Get all users from database."""
     return await admin_service.get_all_users()
 
 
 @router_admin.get("/roles", response_model=List[RoleResponse])
-async def get_all_roles(admin_service: AdminService = Depends(get_admin_service)):
+async def get_all_roles(admin_service: FromDishka[AdminService]):
     """Get all roles from database."""
     return await admin_service.get_all_roles()
 
@@ -26,7 +30,7 @@ async def get_all_roles(admin_service: AdminService = Depends(get_admin_service)
 async def update_user_role(
     user_id: UUID4,
     role_update: UserRoleUpdate,
-    admin_service: AdminService = Depends(get_admin_service),
+    admin_service: FromDishka[AdminService],
 ):
     """Update user role."""
     return await admin_service.update_user_role(user_id, role_update.role)
@@ -34,7 +38,8 @@ async def update_user_role(
 
 @router_admin.post("/roles", status_code=status.HTTP_201_CREATED)
 async def create_new_role(
-    role_create: RoleCreate, admin_service: AdminService = Depends(get_admin_service)
+    role_create: RoleCreate,
+    admin_service: FromDishka[AdminService]
 ):
     """Create new custom role."""
     return await admin_service.create_new_role(role_create)
