@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from src.infrastructure.db.models.gitlab import GitLabConfig
+from src.domain.models.knowledge import GitLabConfig
 
 
 class IGitLabRepository(ABC):

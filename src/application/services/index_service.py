@@ -3,9 +3,9 @@ from typing import Dict, List, Optional
 from fastapi import HTTPException, status
 from pydantic import UUID4
 
-from src.api.schemas.repository import IndexingJob as IndexingJobSchema, JobStatusUpdate
+from src.api.schemas.repository import JobStatusUpdate
 from src.core.settings import settings
-from src.domain.models.knowledge import Repository
+from src.domain.models.knowledge import IndexingJob, Repository
 from src.domain.repositories.gitlab_repo import IGitLabRepository
 from src.domain.repositories.job_repo import IJobRepository
 from src.infrastructure.external.gitlab_client import GitLabClient
@@ -52,7 +52,7 @@ class IndexService:
             token=raw_token
         )
 
-    async def trigger_indexing(self, repository_ids: List[UUID4]) -> IndexingJobSchema:
+    async def trigger_indexing(self, repository_ids: List[UUID4]) -> IndexingJob:
         """Trigger and run indexing service."""
         config = await self.gitlab_repo.get_config()
         if not config:
@@ -89,7 +89,7 @@ class IndexService:
 
         return {"status": "error", "message": f"Job {job_id} doesn't exist."}
 
-    async def get_indexing_status(self, job_id: str) -> Optional[IndexingJobSchema]:
+    async def get_indexing_status(self, job_id: str) -> Optional[IndexingJob]:
         """Get status for existing indexing job."""
         return await self.job_repo.get_job(job_id)
 
@@ -97,6 +97,6 @@ class IndexService:
             self,
             job_id: str,
             status_update: JobStatusUpdate
-    ) -> Optional[IndexingJobSchema]:
+    ) -> Optional[IndexingJob]:
         """Update a status of an existing job by its id."""
         return await self.job_repo.update_job_status(job_id, status_update.status)

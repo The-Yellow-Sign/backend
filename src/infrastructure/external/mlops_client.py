@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pydantic import UUID4
 
-from src.api.schemas.repository import IndexingJob
+from src.domain.models.knowledge import IndexingJob
 
 
 class MLOpsClient:
@@ -21,7 +21,7 @@ class MLOpsClient:
     ) -> IndexingJob:
         """Make a request to start an indexing process."""
         return IndexingJob(
-            id=str(uuid.uuid4()),
+            id=uuid.uuid4(),
             status="RUNNING",
             repository_ids=repo_ids,
             created_at=datetime.now(),
