@@ -3,7 +3,6 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
 from api.routers import admin, auth, chat, indexing, repository
-from api.routers import admin, auth, chat, repository
 from src.infrastructure.di.providers import (
     InfrastructureProvider,
     RepositoryProvider,
