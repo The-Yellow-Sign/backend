@@ -64,5 +64,6 @@ asyncio_mode = "auto"
 
 [dependency-groups]
 dev = [
+    "pytest-cov>=7.0.0",
     "ruff>=0.14.1",
 ]
