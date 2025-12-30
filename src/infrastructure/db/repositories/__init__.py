@@ -1,0 +1,5 @@
+from src.infrastructure.db.repositories.sqlalchemy_chat_repo import SqlAlchemyChatRepository
+from src.infrastructure.db.repositories.sqlalchemy_gitlab_repo import SqlAlchemyGitLabRepository
+from src.infrastructure.db.repositories.sqlalchemy_job_repo import SqlAlchemyJobRepository
+from src.infrastructure.db.repositories.sqlalchemy_role_repo import SqlAlchemyRoleRepository
+from src.infrastructure.db.repositories.sqlalchemy_user_repo import SqlAlchemyUserRepository
