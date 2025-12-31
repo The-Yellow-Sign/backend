@@ -34,3 +34,4 @@ async def list_gitlab_repositories(
 ):
     """Get list of repositories that are available for indexing."""
     return await service.list_repositories()
+
