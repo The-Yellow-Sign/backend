@@ -1,7 +1,7 @@
 from typing import List
 
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
 from src.api.dependencies import get_current_admin_user
 from src.api.schemas.repository import (
