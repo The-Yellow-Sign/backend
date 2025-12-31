@@ -1,8 +1,8 @@
-"""init_full_structure
+"""initial_structure
 
-Revision ID: bc62d80962c0
+Revision ID: 9bf577fdff61
 Revises: 
-Create Date: 2025-12-27 04:47:16.058456
+Create Date: 2025-12-31 09:34:26.856828
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'bc62d80962c0'
+revision: str = '9bf577fdff61'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -27,12 +27,12 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('indexing_jobs',
-    sa.Column('id', sa.String(), nullable=False),
     sa.Column('status', sa.String(length=50), nullable=False),
     sa.Column('repository_ids', sa.JSON(), nullable=False),
     sa.Column('details', sa.Text(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('finished_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('id', sa.UUID(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_indexing_jobs_status'), 'indexing_jobs', ['status'], unique=False)
