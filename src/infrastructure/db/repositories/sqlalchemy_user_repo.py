@@ -87,7 +87,11 @@ class SqlAlchemyUserRepository(IUserRepository):
         orm_user.role = user.role
         orm_user.hashed_password = user.hashed_password
 
-        await self.session.flush()
-        await self.session.refresh(orm_user)
+        try:
+            await self.session.flush()
+            await self.session.refresh(orm_user)
+        except IntegrityError:
+            await self.session.rollback()
+            return None
 
         return DomainUser.model_validate(orm_user)

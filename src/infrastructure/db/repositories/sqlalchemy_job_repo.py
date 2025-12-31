@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
+from pydantic import UUID4
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,17 +19,16 @@ class SqlAlchemyJobRepository(IJobRepository):
 
     async def create_job(
             self,
-            job_id: str,
-            repo_ids: List[int],
+            job_id: UUID4,
+            repo_ids: List[UUID4],
             status: JobStatus,
             details: str
     ) -> DomainIndexingJob:
         """Create an indexing job."""
         clean_repo_ids = [str(item) for item in repo_ids]
-        clean_job_id = str(job_id)
 
         job = ORMIndexingJob(
-            id=clean_job_id,
+            id=job_id,
             repository_ids=clean_repo_ids,
             status=status,
             details=details
@@ -38,7 +38,7 @@ class SqlAlchemyJobRepository(IJobRepository):
         await self.session.flush()
         return DomainIndexingJob.model_validate(job)
 
-    async def delete_job(self, job_id: str) -> bool:
+    async def delete_job(self, job_id: UUID4) -> bool:
         """Delete an existing job by its id.
 
         Return true if deleted, false if the job doesn't exist.
@@ -55,7 +55,7 @@ class SqlAlchemyJobRepository(IJobRepository):
 
         return True
 
-    async def get_job(self, job_id: str) -> Optional[DomainIndexingJob]:
+    async def get_job(self, job_id: UUID4) -> Optional[DomainIndexingJob]:
         """Get an indexing job by its id."""
         stmt = select(ORMIndexingJob).where(ORMIndexingJob.id == job_id)
         result = await self.session.execute(stmt)
@@ -67,7 +67,7 @@ class SqlAlchemyJobRepository(IJobRepository):
 
     async def update_job_status(
             self,
-            job_id: str,
+            job_id: UUID4,
             new_status: JobStatus
     ) -> Optional[DomainIndexingJob]:
         """Update a status of an existing job by its id."""

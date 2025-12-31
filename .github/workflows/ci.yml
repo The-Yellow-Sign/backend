@@ -1,0 +1,28 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create .env file
+      run: cp .env.example .env || touch .env
+
+    - name: Start containers
+      run: docker compose up -d --build --wait backend db db_test
+
+    - name: Run Tests
+      run: docker compose exec -T backend pytest -v
+
+    - name: Stop containers
+      if: always()
+      run: docker compose down -v

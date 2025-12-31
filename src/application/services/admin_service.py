@@ -52,7 +52,8 @@ class AdminService:
         existing_role = await self.role_repo.get_by_name(role_create.name)
         if existing_role:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Role already exists"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Role already exists"
             )
 
         new_role = DomainRole(
@@ -64,7 +65,8 @@ class AdminService:
         created_role = await self.role_repo.create(new_role)
         if not created_role:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Error creating a new role"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Error creating a new role"
             )
 
         return created_role

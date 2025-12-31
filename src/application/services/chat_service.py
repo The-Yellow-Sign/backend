@@ -17,7 +17,7 @@ class ChatService:
     ):
         self.chat_repo = chat_repo
 
-    async def create_chat(self, owner_id: UUID4, title: str):
+    async def create_chat(self, owner_id: UUID4, title: str) -> Chat:
         """Create a new chat with specified title for user by their id."""
         return await self.chat_repo.create_chat(owner_id, title)
 

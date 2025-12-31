@@ -15,14 +15,15 @@ class JobStatus(str, Enum):
     FAILED = "FAILED"
 
 
-class GitLabConfigModel(BaseModel):
+class GitLabConfig(BaseModel):
 
     """Data structure for GitLab config model."""
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: UUID4
-    url: str
+    id: int
+    url: HttpUrl
+    private_token_encrypted: str
 
 
 class Repository(BaseModel):

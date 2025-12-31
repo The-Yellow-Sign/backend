@@ -13,8 +13,6 @@ class IndexingJob(Base):
 
     __tablename__ = "indexing_jobs"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True)
-
     status: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
 
     repository_ids: Mapped[list] = mapped_column(JSON, nullable=False)
