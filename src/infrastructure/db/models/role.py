@@ -11,7 +11,6 @@ class Role(Base):
     __tablename__ = "roles"
 
     name: Mapped[str] = mapped_column(String(50), unique=True, index=True, nullable=False)
-
     permissions: Mapped[list] = mapped_column(JSON, default=[])
 
     def __repr__(self) -> str:

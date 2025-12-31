@@ -1,8 +1,6 @@
 import uuid
 from datetime import datetime
 
-from pydantic import UUID4
-
 from src.domain.models.knowledge import IndexingJob
 
 
@@ -15,7 +13,7 @@ class MLOpsClient:
 
     async def trigger_indexing(
         self,
-        repo_ids: list[UUID4],
+        repo_ids: list[uuid.UUID],
         gitlab_url: str,
         gitlab_token: str
     ) -> IndexingJob:

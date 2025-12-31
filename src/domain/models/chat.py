@@ -1,37 +1,38 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
+from uuid import UUID
 
-from pydantic import UUID4, BaseModel, ConfigDict
 
-
-class Source(BaseModel):
+@dataclass
+class Source:
 
     """Data structure for source."""
 
     title: str
     url: str
-    quote: str | None = None
+    quote: str
 
-class Message(BaseModel):
+
+@dataclass
+class Message:
 
     """Data structure for chat message."""
 
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID4
+    id: UUID
     role: str
     content: str
     created_at: datetime
     sources: Optional[List[Source]] = None
 
-class Chat(BaseModel):
+
+@dataclass
+class Chat:
 
     """Data structure for chat."""
 
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID4
+    id: UUID
     title: str
-    owner_id: UUID4
+    owner_id: UUID
     created_at: datetime
-    messages: List[Message] = []
+    messages: List[Message] = None

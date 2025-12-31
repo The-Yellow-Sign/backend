@@ -19,12 +19,12 @@ async def test_save_config_creates_new(gitlab_repo):
     result = await gitlab_repo.save_config(url, token)
 
     assert result.id == 1
-    assert str(result.url) == url + "/"
+    assert str(result.url) == url
     assert result.private_token_encrypted == token
 
     saved_config = await gitlab_repo.get_config()
     assert saved_config is not None
-    assert str(saved_config.url) == url + "/"
+    assert str(saved_config.url) == url
 
 
 @pytest.mark.asyncio
@@ -38,11 +38,11 @@ async def test_save_config_updates_existing(gitlab_repo):
     result = await gitlab_repo.save_config(new_url, new_token)
 
     assert result.id == 1 # singleton
-    assert str(result.url) == new_url + "/"
+    assert str(result.url) == new_url
     assert result.private_token_encrypted == new_token
 
     saved_config = await gitlab_repo.get_config()
-    assert str(saved_config.url) == new_url + "/"
+    assert str(saved_config.url) == new_url
     assert saved_config.private_token_encrypted == new_token
 
 
@@ -56,7 +56,7 @@ async def test_get_config_success(gitlab_repo):
 
     assert result is not None
     assert result.id == 1
-    assert str(result.url) == url + "/"
+    assert str(result.url) == url
 
 
 @pytest.mark.asyncio

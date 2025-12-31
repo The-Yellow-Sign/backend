@@ -79,7 +79,7 @@ async def test_configure_gitlab_success(ac, mock_index_service, mocker):
     assert response.json() == mock_response
 
     mock_index_service.configure_gitlab.assert_called_once_with(
-        url="https://gitlab.example.com",
+        url="https://gitlab.example.com/",
         private_token="secret-token-123"
     )
 

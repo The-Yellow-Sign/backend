@@ -1,6 +1,6 @@
 from datetime import datetime
+from uuid import UUID
 
-from pydantic import UUID4
 from sqlalchemy import JSON, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
@@ -16,9 +16,7 @@ class Chat(Base):
 
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-
-    owner_id: Mapped[UUID4] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
-
+    owner_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     messages: Mapped[list["Message"]] = relationship(
         back_populates="chat",
         cascade="all, delete-orphan",
@@ -35,9 +33,10 @@ class Message(Base):
 
     __tablename__ = "messages"
 
-    chat_id: Mapped[UUID4] = mapped_column(ForeignKey("chats.id", ondelete="CASCADE"))
+    chat_id: Mapped[UUID] = mapped_column(ForeignKey("chats.id", ondelete="CASCADE"))
 
     role: Mapped[str] = mapped_column(String(20), nullable=False) # "user" или "assistant"
+
     content: Mapped[str] = mapped_column(Text, nullable=False)
 
     sources: Mapped[list | None] = mapped_column(JSON, nullable=True)

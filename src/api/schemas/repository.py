@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import List, Optional
+from uuid import UUID
 
-from pydantic import UUID4, BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl
 
 from src.domain.models.knowledge import JobStatus
 
@@ -10,16 +11,16 @@ class GitLabConfigCreate(BaseModel):
 
     """Data structure for GitLab config create schema."""
 
-    url: str = Field(...)
-    private_token: str = Field(...)
+    url: HttpUrl
+    private_token: str
 
 
 class Repository(BaseModel):
 
     """Data structure for repository."""
 
-    id: UUID4
-    name: str = Field(...)
+    id: UUID
+    name: str
     path_with_namespace: str = Field(..., example="group/my-awesome-project")
     web_url: HttpUrl
 
@@ -28,16 +29,16 @@ class SyncRequest(BaseModel):  # разделить на два разных т�
 
     """Data strucuture for repositories indexing request."""
 
-    repository_ids: List[UUID4] = Field(...)
+    repository_ids: List[UUID]
 
 
 class IndexingJob(BaseModel):
 
     """Data structure for an existing indexing job."""
 
-    id: UUID4
+    id: UUID
     status: JobStatus
-    repository_ids: List[UUID4]
+    repository_ids: List[UUID]
     created_at: datetime
     finished_at: Optional[datetime] = None
     details: Optional[str] = None  # возможно мета инфа

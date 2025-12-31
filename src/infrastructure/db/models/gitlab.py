@@ -11,9 +11,7 @@ class GitLabConfig(Base):
     __tablename__ = "gitlab_configs"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-
     url: Mapped[str] = mapped_column(String, nullable=False)
-
     private_token_encrypted: Mapped[str] = mapped_column(Text, nullable=False)
 
     def __repr__(self) -> str:

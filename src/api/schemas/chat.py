@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import List, Optional
+from uuid import UUID
 
-from pydantic import UUID4, BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
 
 class SourceMeta(BaseModel):
@@ -16,8 +17,8 @@ class Source(BaseModel):
     """Data structure for source information."""
 
     title: str
-    url: str
-    quote: str | None = None
+    url: HttpUrl
+    quote: str
 
 
 class MessageBase(BaseModel):
@@ -40,10 +41,10 @@ class MessageResponse(MessageBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: UUID4
+    id: UUID
     role: str = Field(..., example="user")
     created_at: datetime
-    sources: Optional[List[Source]] = None  # только для assistant роли?
+    sources: Optional[List[Source]] = None
 
 
 class ChatBase(BaseModel):
@@ -59,9 +60,9 @@ class ChatResponse(ChatBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: UUID4
+    id: UUID
     created_at: datetime
-    owner_id: UUID4
+    owner_id: UUID
 
 
 class ChatHistoryResponse(ChatResponse):

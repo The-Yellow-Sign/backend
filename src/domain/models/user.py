@@ -1,27 +1,24 @@
+from dataclasses import dataclass
 from typing import List, Optional
+from uuid import UUID
 
-from pydantic import UUID4, BaseModel, ConfigDict, EmailStr
 
-
-class User(BaseModel):
+@dataclass
+class User:
 
     """Data structure for user information."""
 
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID4
+    id: UUID
     username: str
-    email: Optional[EmailStr] = None
     role: str
     hashed_password: str
+    email: Optional[str] = None
 
-
-class Role(BaseModel):
+@dataclass
+class Role:
 
     """Data structure for role."""
 
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID4
+    id: UUID
     name: str
     permissions: List[str]

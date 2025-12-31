@@ -214,7 +214,6 @@ async def test_send_message_success(ac, mock_chat_service, mock_user):
 
     assistant_response = DomainMessage(
         id=uuid4(),
-        chat_id=chat_id,
         role="assistant",
         content="test_answer",
         created_at=datetime.now()

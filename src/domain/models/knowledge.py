@@ -1,8 +1,8 @@
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional
-
-from pydantic import UUID4, BaseModel, ConfigDict, HttpUrl
+from uuid import UUID
 
 
 class JobStatus(str, Enum):
@@ -15,36 +15,35 @@ class JobStatus(str, Enum):
     FAILED = "FAILED"
 
 
-class GitLabConfig(BaseModel):
+@dataclass
+class GitLabConfig:
 
     """Data structure for GitLab config model."""
 
-    model_config = ConfigDict(from_attributes=True)
-
     id: int
-    url: HttpUrl
+    url: str
     private_token_encrypted: str
 
 
-class Repository(BaseModel):
+@dataclass
+class Repository:
 
     """Data structure for repository."""
 
-    id: UUID4
+    id: UUID
     name: str
     path_with_namespace: str
-    web_url: HttpUrl
+    web_url: str
 
 
-class IndexingJob(BaseModel):
+@dataclass
+class IndexingJob:
 
     """Data structure for an existing indexing job."""
 
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID4
+    id: UUID
     status: JobStatus
-    repository_ids: List[UUID4]
+    repository_ids: List[UUID]
     created_at: datetime
     finished_at: Optional[datetime] = None
     details: Optional[str] = None

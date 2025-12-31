@@ -37,7 +37,7 @@ async def test_create_chat_success(mock_chat_repo):
     assert result.title == title
     assert result.owner_id == owner_id
     assert result.created_at == create_time
-    assert result.messages == []
+    assert result.messages is None
 
 
 @pytest.mark.asyncio
@@ -85,7 +85,7 @@ async def test_get_chat_history_success(mock_chat_repo):
     assert result.title == "test_title"
     assert result.owner_id == user_id
     assert result.created_at == create_time
-    assert result.messages == []
+    assert result.messages is None
 
 
 @pytest.mark.asyncio

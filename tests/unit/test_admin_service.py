@@ -1,3 +1,4 @@
+from dataclasses import replace
 from unittest.mock import AsyncMock
 from uuid import uuid4
 
@@ -112,8 +113,8 @@ async def test_update_user_role_success(mock_user_repo, mock_role_repo):
         id=uuid4(), name="admin", permissions=[]
     )
 
-    updated_user_copy = existing_user.model_copy(update={"role": role_name})
-    mock_user_repo.update.return_value = updated_user_copy
+    existing_user = replace(existing_user, **{"role": role_name})
+    mock_user_repo.update.return_value = existing_user
     service = AdminService(user_repo=mock_user_repo, role_repo=mock_role_repo)
 
     result = await service.update_user_role(user_id=user_id, role_name=role_name)

@@ -1,6 +1,7 @@
 from typing import List
+from uuid import UUID
 
-from pydantic import UUID4, BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.api.schemas.auth import UserBase
 
@@ -9,7 +10,7 @@ class RoleCreate(BaseModel):
 
     """Data structure for creating a new role."""
 
-    name: str = Field(...)
+    name: str = Field(..., example="admin")
     permissions: List[str] = Field(..., example=["read:repo:project_x", "chat:use"])
 
 
@@ -17,12 +18,11 @@ class RoleResponse(BaseModel):
 
     """Data structure for information about role."""
 
-    id: UUID4
-    name: str
-    permissions: List[str]
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config: # noqa: D106
-        from_attributes = True
+    id: UUID
+    name: str = Field(..., example="admin")
+    permissions: List[str] = Field(..., example=["read:repo:project_x", "chat:use"])
 
 
 class UserRoleUpdate(BaseModel):
@@ -36,8 +36,8 @@ class UserResponse(UserBase):
 
     """Data structure for information about user."""
 
-    id: UUID4
-    role: str
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config: # noqa: D106
-        from_attributes = True
+    id: UUID
+    role: str = Field(..., example="admin")
+

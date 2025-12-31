@@ -49,7 +49,7 @@ async def ac(dishka_app):
     """Create AsyncClient for tests."""
     dishka_app.dependency_overrides[get_current_user] = lambda: DomainUser(
         id=uuid4(),
-        username="user",
+        username="username",
         email="user@test.com",
         role="user",
         hashed_password="hash"
@@ -169,5 +169,5 @@ async def test_read_users_me_success(ac):
     assert response.status_code == 200
     data = response.json()
 
-    assert data["username"] == "user" # from override fixture
+    assert data["username"] == "username" # from override fixture
     assert data["email"] == "user@test.com"
