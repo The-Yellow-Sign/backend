@@ -4,30 +4,19 @@ from uuid import uuid4
 
 import pytest
 import pytest_asyncio
+from dishka import Provider, Scope, make_async_container
+from dishka.integrations.fastapi import setup_dishka
 from fastapi import HTTPException, status
-from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
 
 from src.api.dependencies import (
-    get_chat_service,
     get_current_user,
 )
 from src.application.services.chat_service import ChatService
 from src.domain.models.chat import Chat as DomainChat, Message as DomainMessage
 from src.domain.models.user import User as DomainUser
-from src.main import app
-
-client = TestClient(app)
-
 
 BASE_URL = "/v1/chat"
-
-
-@pytest_asyncio.fixture(scope="function")
-async def ac():
-    """Create AsyncClient for tests."""
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
-        yield c
 
 
 @pytest_asyncio.fixture
@@ -49,16 +38,35 @@ def mock_user():
     )
 
 
-@pytest_asyncio.fixture(autouse=True)
-def override_dependencies(mock_chat_service, mock_user):
-    """Override dependencies for ChatService's mock."""
-    app.dependency_overrides[get_current_user] = lambda: mock_user
+@pytest_asyncio.fixture(scope="function")
+async def dishka_app(app_fixture, mock_chat_service):
+    """Fixture for Dishka integration."""
+    provider = Provider()
 
-    app.dependency_overrides[get_chat_service] = lambda: mock_chat_service
+    provider.provide(
+        lambda: mock_chat_service,
+        scope=Scope.APP,
+        provides=ChatService
+    )
 
-    yield
+    container = make_async_container(provider)
+    app_fixture.middleware_stack = None
+    setup_dishka(container, app_fixture)
 
-    app.dependency_overrides = {}
+    yield app_fixture
+
+    await container.close()
+
+
+@pytest_asyncio.fixture(scope="function")
+async def ac(dishka_app, mock_user):
+    """Create AsyncClient for tests."""
+    dishka_app.dependency_overrides[get_current_user] = lambda: mock_user
+
+    async with AsyncClient(transport=ASGITransport(app=dishka_app), base_url="http://test") as c:
+        yield c
+
+    dishka_app.dependency_overrides = {}
 
 
 @pytest.mark.asyncio
