@@ -66,6 +66,7 @@ async def get_chat_history(
 )
 async def send(
         chat_id: UUID4,
+        repo_ids: List[UUID4],
         message: MessageCreate,
         service: FromDishka[ChatService],
         current_user: User = Depends(get_current_user)
@@ -80,5 +81,6 @@ async def send(
     return await service.ask_question(
         user_id=current_user.id,
         chat_id=chat_id,
+        repo_ids=repo_ids,
         question=message.content
     )
