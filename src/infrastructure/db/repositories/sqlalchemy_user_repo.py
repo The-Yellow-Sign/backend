@@ -17,22 +17,13 @@ class SqlAlchemyUserRepository(IUserRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    def _transform_orm_model_to_domain(self, orm_model: ORMUser) -> DomainUser:
-        return DomainUser(
-            id=orm_model.id,
-            username=orm_model.username,
-            email=orm_model.email,
-            role=orm_model.role,
-            hashed_password=orm_model.hashed_password
-        )
-
     async def get_all_users(self) -> List[DomainUser]:
         """Retrieve all existing users from db."""
         stmt = select(ORMUser)
         result = await self.session.execute(stmt)
         orm_users = result.scalars().all()
 
-        return [self._transform_orm_model_to_domain(orm_user) for orm_user in orm_users]
+        return [DomainUser.model_validate(orm_user) for orm_user in orm_users]
 
     async def get_by_username(self, username: str) -> Optional[DomainUser]:
         """Retrieve user from db by id."""
@@ -41,7 +32,7 @@ class SqlAlchemyUserRepository(IUserRepository):
         orm_user = result.scalar_one_or_none()
 
         if orm_user:
-            return self._transform_orm_model_to_domain(orm_user)
+            return DomainUser.model_validate(orm_user)
         return None
 
     async def get_by_email(self, email: str) -> Optional[DomainUser]:
@@ -51,7 +42,7 @@ class SqlAlchemyUserRepository(IUserRepository):
         orm_user = result.scalar_one_or_none()
 
         if orm_user:
-            return self._transform_orm_model_to_domain(orm_user)
+            return DomainUser.model_validate(orm_user)
         return None
 
     async def get_by_id(self, user_id: UUID) -> Optional[DomainUser]:
@@ -61,7 +52,7 @@ class SqlAlchemyUserRepository(IUserRepository):
         orm_user = result.scalar_one_or_none()
 
         if orm_user:
-            return self._transform_orm_model_to_domain(orm_user)
+            return DomainUser.model_validate(orm_user)
         return None
 
     async def create(self, user: DomainUser) -> DomainUser:
@@ -81,7 +72,7 @@ class SqlAlchemyUserRepository(IUserRepository):
             await self.session.rollback()
             return None
 
-        return self._transform_orm_model_to_domain(db_user)
+        return DomainUser.model_validate(db_user)
 
     async def update(self, user: DomainUser) -> Optional[DomainUser]:
         """Update info about existing user."""
@@ -100,4 +91,4 @@ class SqlAlchemyUserRepository(IUserRepository):
             await self.session.rollback()
             return None
 
-        return self._transform_orm_model_to_domain(orm_user)
+        return DomainUser.model_validate(orm_user)

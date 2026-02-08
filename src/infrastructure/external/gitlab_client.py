@@ -15,6 +15,6 @@ class GitLabClient:
                 id=str(uuid.uuid4()),
                 name="Mock",
                 path_with_namespace="iter1/mock",
-                web_url="https://www.gitlab.com/mock_repo"
+                url="https://www.gitlab.com/mock_repo"
             )
         ]

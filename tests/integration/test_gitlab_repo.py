@@ -13,7 +13,7 @@ def gitlab_repo(session):
 @pytest.mark.asyncio
 async def test_save_config_creates_new(gitlab_repo):
     """Test that service creates new config if it doesn't configured yet."""
-    url = "https://gitlab.com"
+    url = "https://gitlab.com/"
     token = "encrypted_token_123"
 
     result = await gitlab_repo.save_config(url, token)
@@ -30,9 +30,9 @@ async def test_save_config_creates_new(gitlab_repo):
 @pytest.mark.asyncio
 async def test_save_config_updates_existing(gitlab_repo):
     """Test that service updates old config."""
-    await gitlab_repo.save_config("https://old.com", "old_token")
+    await gitlab_repo.save_config("https://old.com/", "old_token")
 
-    new_url = "https://new-gitlab.com"
+    new_url = "https://new-gitlab.com/"
     new_token = "new_secret_token"
 
     result = await gitlab_repo.save_config(new_url, new_token)
@@ -49,7 +49,7 @@ async def test_save_config_updates_existing(gitlab_repo):
 @pytest.mark.asyncio
 async def test_get_config_success(gitlab_repo):
     """Test that service returns created config."""
-    url = "https://exist.com"
+    url = "https://exist.com/"
     await gitlab_repo.save_config(url, "token")
 
     result = await gitlab_repo.get_config()

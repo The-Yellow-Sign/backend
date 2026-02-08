@@ -61,7 +61,7 @@ async def test_create_job_success(job_factory, job_status, details):
     )
 
     assert created_job.id is not None
-    assert created_job.repository_ids == [str(r_id) for r_id in repository_ids]
+    assert created_job.repository_ids == repository_ids
     assert created_job.status == job_status
     assert created_job.details == details
     assert created_job.status == job_status

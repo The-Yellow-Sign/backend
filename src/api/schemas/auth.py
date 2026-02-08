@@ -1,3 +1,4 @@
+from enum import Enum
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
@@ -9,6 +10,14 @@ class Token(BaseModel):
 
     access_token: str
     token_type: str = Field(default="bearer") # noqa: S105
+
+
+class UserRole(str, Enum):
+
+    """Data structure for user's role names."""
+
+    USER = "user"
+    ADMIN = "admin"
 
 
 class UserBase(BaseModel):
@@ -24,7 +33,7 @@ class UserInDB(UserBase):
     """Data structure for ful user information fields."""
 
     id: UUID
-    role: str = Field(default="user")
+    role: UserRole = UserRole.USER
 
 
 class UserResponse(UserInDB):

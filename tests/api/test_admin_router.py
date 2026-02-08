@@ -10,7 +10,7 @@ from httpx import ASGITransport, AsyncClient
 
 from src.api.dependencies import get_current_admin_user
 from src.application.services.admin_service import AdminService
-from src.domain.models.user import Role as DomainRole, User as DomainUser
+from src.domain.models.user import Role as DomainRole, User as DomainUser, UserRole
 
 BASE_URL = "/v1/admin"
 
@@ -111,8 +111,8 @@ async def test_get_all_users_empty(ac, mock_admin_service):
 async def test_get_all_roles_not_empty(ac, mock_admin_service):
     """Test that endpoint returns a list of Role when there is a valid data."""
     mock_roles_list = [
-        DomainRole(id=uuid4(), name="custom_role1", permissions=["perm1"]),
-        DomainRole(id=uuid4(), name="custom_role2", permissions=["perm2"]),
+        DomainRole(id=uuid4(), name=UserRole.USER, permissions=["perm1"]),
+        DomainRole(id=uuid4(), name=UserRole.ADMIN, permissions=["perm2"]),
     ]
     mock_admin_service.get_all_roles.return_value = mock_roles_list
 
@@ -123,9 +123,9 @@ async def test_get_all_roles_not_empty(ac, mock_admin_service):
 
     data = response.json()
     assert len(data) == 2
-    assert data[0]["name"] == "custom_role1"
+    assert data[0]["name"] == "user"
     assert data[0]["permissions"] == ["perm1"]
-    assert data[1]["name"] == "custom_role2"
+    assert data[1]["name"] == "admin"
     assert data[1]["permissions"] == ["perm2"]
 
 
@@ -146,7 +146,7 @@ async def test_get_all_roles_empty(ac, mock_admin_service):
 @pytest.mark.asyncio
 async def test_update_user_role_success(ac, mock_admin_service):
     """Test that endpoint returns User with updated fields when there is a valid data."""
-    new_role = "new_role"
+    new_role = "user"
     user_id = uuid4()
     mock_admin_service.update_user_role.return_value = DomainUser(
         id=user_id,
@@ -186,7 +186,7 @@ async def test_update_user_role_invalid_body(ac, mock_admin_service):
 async def test_create_new_role_success(ac, mock_admin_service):
     """Test that endpoint returns new Role with when there is a valid data."""
     payload = {
-        "name": "super_editor",
+        "name": "user",
         "permissions": ["test_permissions"]
     }
 

@@ -17,19 +17,6 @@ class SqlAlchemyJobRepository(IJobRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    def _transform_orm_model_to_domain(
-            self,
-            orm_model: ORMIndexingJob
-    ) -> DomainIndexingJob:
-        return DomainIndexingJob(
-            id=orm_model.id,
-            status=orm_model.status,
-            repository_ids=orm_model.repository_ids,
-            created_at=orm_model.created_at,
-            finished_at=orm_model.finished_at,
-            details=orm_model.details
-        )
-
     async def create_job(
             self,
             job_id: UUID,
@@ -49,7 +36,7 @@ class SqlAlchemyJobRepository(IJobRepository):
 
         self.session.add(job)
         await self.session.flush()
-        return self._transform_orm_model_to_domain(job)
+        return DomainIndexingJob.model_validate(job)
 
     async def delete_job(self, job_id: UUID) -> bool:
         """Delete an existing job by its id.
@@ -74,7 +61,7 @@ class SqlAlchemyJobRepository(IJobRepository):
         result = await self.session.execute(stmt)
         orm_job = result.scalar_one_or_none()
         if orm_job:
-            return self._transform_orm_model_to_domain(orm_job)
+            return DomainIndexingJob.model_validate(orm_job)
 
         return None
 
@@ -98,4 +85,4 @@ class SqlAlchemyJobRepository(IJobRepository):
         await self.session.flush()
         await self.session.refresh(orm_job)
 
-        return self._transform_orm_model_to_domain(orm_job)
+        return DomainIndexingJob.model_validate(orm_job)

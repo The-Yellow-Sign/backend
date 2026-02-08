@@ -1,4 +1,3 @@
-from dataclasses import replace
 from unittest.mock import AsyncMock
 from uuid import uuid4
 
@@ -69,8 +68,8 @@ async def test_get_all_users_empty(mock_user_repo, mock_role_repo):
 async def test_get_all_roles_not_empty(mock_user_repo, mock_role_repo):
     """Test that service returns list of Roles when db contains valid data."""
     roles = [
-        DomainRole(id=uuid4(), name="test_role1", permissions=["read:repo:project_x"]),
-        DomainRole(id=uuid4(), name="test_role2", permissions=["chat:use"])
+        DomainRole(id=uuid4(), name="admin", permissions=["read:repo:project_x"]),
+        DomainRole(id=uuid4(), name="user", permissions=["chat:use"])
     ]
     mock_role_repo.get_all_roles.return_value = roles
 
@@ -113,7 +112,7 @@ async def test_update_user_role_success(mock_user_repo, mock_role_repo):
         id=uuid4(), name="admin", permissions=[]
     )
 
-    existing_user = replace(existing_user, **{"role": role_name})
+    existing_user = existing_user.model_copy(update={"role": role_name})
     mock_user_repo.update.return_value = existing_user
     service = AdminService(user_repo=mock_user_repo, role_repo=mock_role_repo)
 

@@ -15,7 +15,7 @@ def role_repo(session):
 @pytest.mark.asyncio
 async def test_create_role_success(role_repo):
     """Test that Role is created."""
-    role_name = "test_role"
+    role_name = "user"
     permissions = ["test1", "test2"]
     new_role = DomainRole(
         id=uuid4(),
@@ -36,14 +36,14 @@ async def test_create_role_duplicate_name(role_repo):
     """Test that Role is not created if it already exists."""
     role1 = DomainRole(
         id=uuid4(),
-        name="test_role1",
+        name="user",
         permissions=[]
     )
     await role_repo.create(role1)
 
     role2 = DomainRole(
         id=uuid4(),
-        name="test_role1", # the same name
+        name="user", # the same name
         permissions=["other_perm"]
     )
 
@@ -55,7 +55,7 @@ async def test_create_role_duplicate_name(role_repo):
 @pytest.mark.asyncio
 async def test_get_by_name_success(role_repo):
     """Test that Role is extracted by name."""
-    name = "test_name"
+    name = "admin"
     permissions = ["test_perm"]
     await role_repo.create(
         DomainRole(id=uuid4(), name=name, permissions=permissions)
@@ -78,7 +78,7 @@ async def test_get_by_name_not_found(role_repo):
 @pytest.mark.asyncio
 async def test_get_all_roles_success(role_repo):
     """Test that all Roles are extracted."""
-    roles_to_create = ["test_1", "test_2", "test_3"]
+    roles_to_create = ["user", "admin"]
     for name in roles_to_create:
         await role_repo.create(
             DomainRole(id=uuid4(), name=name, permissions=[])
@@ -86,7 +86,7 @@ async def test_get_all_roles_success(role_repo):
 
     all_roles = await role_repo.get_all_roles()
 
-    assert len(all_roles) == 3
+    assert len(all_roles) == 2
 
     fetched_names = [r.name for r in all_roles]
     for name in roles_to_create:

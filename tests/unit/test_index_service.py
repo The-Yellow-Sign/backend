@@ -44,7 +44,7 @@ def repository():
         id=uuid4(),
         name="test_repository",
         path_with_namespace="test1/test2",
-        web_url="https://test.com"
+        url="https://test.com"
     )
 
 

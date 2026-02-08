@@ -1,24 +1,37 @@
-from dataclasses import dataclass
+from enum import Enum
 from typing import List, Optional
 from uuid import UUID
 
+from pydantic import BaseModel, ConfigDict, EmailStr
 
-@dataclass
-class User:
+
+class UserRole(str, Enum):
+
+    """Data structure for user's role names."""
+
+    USER = "user"
+    ADMIN = "admin"
+
+
+class User(BaseModel):
 
     """Data structure for user information."""
 
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     username: str
-    role: str
+    role: UserRole = UserRole.USER
     hashed_password: str
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
 
-@dataclass
-class Role:
+
+class Role(BaseModel):
 
     """Data structure for role."""
 
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
-    name: str
+    name: UserRole
     permissions: List[str]
