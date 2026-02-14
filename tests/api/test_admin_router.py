@@ -8,7 +8,7 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import HTTPException, status
 from httpx import ASGITransport, AsyncClient
 
-from src.api.dependencies import get_current_admin_user
+from src.api.dependencies import get_current_user
 from src.application.services.admin_service import AdminService
 from src.domain.models.user import Role as DomainRole, User as DomainUser, UserRole
 
@@ -45,7 +45,7 @@ async def dishka_app(app_fixture, mock_admin_service):
 @pytest_asyncio.fixture(scope="function")
 async def ac(dishka_app):
     """Create AsyncClient for tests."""
-    dishka_app.dependency_overrides[get_current_admin_user] = lambda: DomainUser(
+    dishka_app.dependency_overrides[get_current_user] = lambda: DomainUser(
         id=uuid4(),
         username="admin",
         email="admin@test.com",

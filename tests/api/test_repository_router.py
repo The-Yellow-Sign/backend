@@ -7,7 +7,7 @@ from dishka import Provider, Scope, make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from httpx import ASGITransport, AsyncClient
 
-from src.api.dependencies import get_current_admin_user
+from src.api.dependencies import get_current_user
 from src.application.services.index_service import IndexService
 from src.domain.models.user import User as DomainUser
 
@@ -44,7 +44,7 @@ async def dishka_app(app_fixture, mock_index_service):
 @pytest_asyncio.fixture(scope="function")
 async def ac(dishka_app):
     """Create AsyncClient for tests."""
-    dishka_app.dependency_overrides[get_current_admin_user] = lambda: DomainUser(
+    dishka_app.dependency_overrides[get_current_user] = lambda: DomainUser(
         id=uuid4(),
         username="admin",
         email="admin@test.com",
@@ -92,13 +92,13 @@ async def test_list_gitlab_repositories_success(ac, mock_index_service):
             "id": str(uuid4()),
             "name": "Repo 1",
             "path_with_namespace": "group/repo1",
-            "web_url": "https://gitlab.com/group/repo1"
+            "url": "https://gitlab.com/group/repo1"
         },
         {
             "id": str(uuid4()),
             "name": "Repo 2",
             "path_with_namespace": "group/repo2",
-            "web_url": "https://gitlab.com/group/repo2"
+            "url": "https://gitlab.com/group/repo2"
         }
     ]
     mock_index_service.list_repositories.return_value = mock_repos
