@@ -5,6 +5,7 @@ from dishka.integrations.fastapi import FromDishka, inject
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
+from src.core.security_policy import ROLE_PERMISSIONS, Action
 from src.domain.models.user import User as DomainUser
 from src.domain.repositories.user_repo import IUserRepository
 from src.infrastructure.security.jwt import decode_access_token
@@ -44,13 +45,17 @@ async def get_current_user(
     return user
 
 
-async def get_current_admin_user(
-    current_user: DomainUser = Depends(get_current_user),
-) -> DomainUser:
-    """Check that current user has an admin role."""
-    if current_user.role != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin role needed.",
-        )
-    return current_user
+class PermissionChecker:
+
+    """Class for user's access validation (RBAC)."""
+
+    def __init__(self, required_action: Action):
+        self.required_action = required_action
+
+    def __call__(self, user: DomainUser = Depends(get_current_user)) -> None:
+        """Check user's access."""
+        if self.required_action not in ROLE_PERMISSIONS[user.role]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Access denied. Required permission: {self.required_action.value}"
+            )
