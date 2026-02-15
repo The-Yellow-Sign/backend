@@ -15,8 +15,14 @@ def mock_chat_repo():
     return AsyncMock()
 
 
+@pytest.fixture(scope="function")
+def mock_cache_repo():
+    """Create AsyncMock for cache_repo."""
+    return AsyncMock()
+
+
 @pytest.mark.asyncio
-async def test_create_chat_success(mock_chat_repo):
+async def test_create_chat_success(mock_chat_repo, mock_cache_repo):
     """Test that Chat is created."""
     owner_id = uuid4()
     title = "test_title"
@@ -28,7 +34,7 @@ async def test_create_chat_success(mock_chat_repo):
         created_at=create_time
     )
 
-    service = ChatService(mock_chat_repo)
+    service = ChatService(mock_chat_repo, mock_cache_repo)
 
     result = await service.create_chat(owner_id, title)
 
@@ -42,7 +48,7 @@ async def test_create_chat_success(mock_chat_repo):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("n_chats", [0, 1, 2])
-async def test_user_chats_success(mock_chat_repo, n_chats):
+async def test_user_chats_success(mock_chat_repo, mock_cache_repo, n_chats):
     """Test that all User's Chats are returned."""
     user_id = str(uuid4())
     mock_chat_repo.get_user_chats.return_value = [
@@ -54,7 +60,7 @@ async def test_user_chats_success(mock_chat_repo, n_chats):
         )
     ] * n_chats
 
-    service = ChatService(mock_chat_repo)
+    service = ChatService(mock_chat_repo, mock_cache_repo)
 
     result = await service.get_user_chats(user_id)
 
@@ -64,7 +70,7 @@ async def test_user_chats_success(mock_chat_repo, n_chats):
 
 
 @pytest.mark.asyncio
-async def test_get_chat_history_success(mock_chat_repo):
+async def test_get_chat_history_success(mock_chat_repo, mock_cache_repo):
     """Test that all Chat history is returned."""
     user_id = uuid4()
     chat_id = uuid4()
@@ -76,7 +82,7 @@ async def test_get_chat_history_success(mock_chat_repo):
         created_at=create_time
     )
 
-    service = ChatService(mock_chat_repo)
+    service = ChatService(mock_chat_repo, mock_cache_repo)
 
     result = await service.get_chat_history(user_id=user_id, chat_id=chat_id)
 
@@ -89,11 +95,11 @@ async def test_get_chat_history_success(mock_chat_repo):
 
 
 @pytest.mark.asyncio
-async def test_get_chat_history_chat_not_found(mock_chat_repo):
+async def test_get_chat_history_chat_not_found(mock_chat_repo, mock_cache_repo):
     """Test that error is raised when there is no Chat with specified chat_id."""
     mock_chat_repo.get_chat_full.return_value = None
 
-    service = ChatService(mock_chat_repo)
+    service = ChatService(mock_chat_repo, mock_cache_repo)
 
     with pytest.raises(HTTPException) as exc:
         await service.get_chat_history(user_id=uuid4(), chat_id=uuid4())
@@ -103,7 +109,7 @@ async def test_get_chat_history_chat_not_found(mock_chat_repo):
 
 
 @pytest.mark.asyncio
-async def test_get_chat_history_user_is_not_chat_owner(mock_chat_repo):
+async def test_get_chat_history_user_is_not_chat_owner(mock_chat_repo, mock_cache_repo):
     """Test that error is raised when User doesn't own the exact Chat."""
     user_id = uuid4()
     chat_id = uuid4()
@@ -114,7 +120,7 @@ async def test_get_chat_history_user_is_not_chat_owner(mock_chat_repo):
         created_at=datetime.now()
     )
 
-    service = ChatService(mock_chat_repo)
+    service = ChatService(mock_chat_repo, mock_cache_repo)
 
     with pytest.raises(HTTPException) as exc:
         await service.get_chat_history(user_id=uuid4(), chat_id=chat_id)
@@ -124,7 +130,7 @@ async def test_get_chat_history_user_is_not_chat_owner(mock_chat_repo):
 
 
 @pytest.mark.asyncio
-async def test_get_ask_question_success(mock_chat_repo):
+async def test_get_ask_question_success(mock_chat_repo, mock_cache_repo):
     """Test that new Messages are returned after QnA iteration."""
     user_id = uuid4()
     chat_id = uuid4()
@@ -151,11 +157,12 @@ async def test_get_ask_question_success(mock_chat_repo):
             created_at=datetime.now()
         )
     ]
-    service = ChatService(mock_chat_repo)
+    service = ChatService(mock_chat_repo, mock_cache_repo)
 
     result = await service.ask_question(
         user_id=user_id,
         chat_id=chat_id,
+        repo_ids=[uuid4()],
         question=question
     )
 
@@ -165,18 +172,19 @@ async def test_get_ask_question_success(mock_chat_repo):
 
 
 @pytest.mark.asyncio
-async def test_get_ask_question_chat_not_found(mock_chat_repo):
+async def test_get_ask_question_chat_not_found(mock_chat_repo, mock_cache_repo):
     """Test that error is raised when there is no Chat with specified chat_id."""
     user_id = uuid4()
     chat_id = uuid4()
     mock_chat_repo.get_chat_full.return_value = None
 
-    service = ChatService(mock_chat_repo)
+    service = ChatService(mock_chat_repo, mock_cache_repo)
 
     with pytest.raises(HTTPException) as exc:
         await service.ask_question(
             user_id=user_id,
             chat_id=chat_id,
+            repo_ids=[uuid4()],
             question="test_question"
         )
 
@@ -185,7 +193,7 @@ async def test_get_ask_question_chat_not_found(mock_chat_repo):
 
 
 @pytest.mark.asyncio
-async def test_get_ask_question_user_is_not_chat_owner(mock_chat_repo):
+async def test_get_ask_question_user_is_not_chat_owner(mock_chat_repo, mock_cache_repo):
     """Test that error is raised when User doesn't own the exact Chat."""
     user_id = uuid4()
     chat_id = uuid4()
@@ -196,12 +204,13 @@ async def test_get_ask_question_user_is_not_chat_owner(mock_chat_repo):
         created_at=datetime.now()
     )
 
-    service = ChatService(mock_chat_repo)
+    service = ChatService(mock_chat_repo, mock_cache_repo)
 
     with pytest.raises(HTTPException) as exc:
         await service.ask_question(
             user_id=uuid4(),
             chat_id=chat_id,
+            repo_ids=[uuid4()],
             question="test_question"
         )
 

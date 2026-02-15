@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from api.routers import admin, auth, chat, indexing, repository
 from src.infrastructure.di.providers import (
+    CacheProvider,
     InfrastructureProvider,
     RepositoryProvider,
     SericeProvider,
@@ -18,6 +19,7 @@ container = make_async_container(
     InfrastructureProvider(),
     RepositoryProvider(),
     SericeProvider(),
+    CacheProvider()
 )
 
 setup_dishka(container, app)
