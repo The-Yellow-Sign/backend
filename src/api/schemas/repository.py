@@ -22,7 +22,7 @@ class Repository(BaseModel):
     id: UUID
     name: str
     path_with_namespace: str = Field(..., example="group/my-awesome-project")
-    web_url: HttpUrl
+    url: HttpUrl
 
 
 class SyncRequest(BaseModel):  # разделить на два разных типа - одиночный и multi?
