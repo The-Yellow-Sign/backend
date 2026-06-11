@@ -2,21 +2,25 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from src.api.dependencies import get_current_admin_user
+from src.api.dependencies import PermissionChecker
 from src.api.schemas.repository import (
     IndexingJob,
     JobStatusUpdate,
     SyncRequest,
 )
 from src.application.services.index_service import IndexService
+from src.core.security_policy import Action
 
 router_indexing = APIRouter(
-    dependencies=[Depends(get_current_admin_user)],
     route_class=DishkaRoute
 )
 
 
-@router_indexing.post("/trigger", response_model=IndexingJob)
+@router_indexing.post(
+    "/trigger",
+    response_model=IndexingJob,
+    dependencies=[Depends(PermissionChecker(Action.INDEXING_TRIGGER))]
+)
 async def trigger_indexing(
     sync_request: SyncRequest,
     service: FromDishka[IndexService]
@@ -27,7 +31,10 @@ async def trigger_indexing(
     )
 
 
-@router_indexing.delete("/{job_id}")
+@router_indexing.delete(
+    "/{job_id}",
+    dependencies=[Depends(PermissionChecker(Action.INDEXING_DELETE))]
+)
 async def delete_indexing_job(
     job_id: str,
     service: FromDishka[IndexService]
@@ -39,7 +46,11 @@ async def delete_indexing_job(
     return await service.delete_indexind_job(job_id)
 
 
-@router_indexing.get("/status/{job_id}", response_model=IndexingJob)
+@router_indexing.get(
+    "/status/{job_id}",
+    response_model=IndexingJob,
+    dependencies=[Depends(PermissionChecker(Action.INDEXING_GET))]
+)
 async def get_indexing_status(
     job_id: str,
     service: FromDishka[IndexService]
@@ -48,7 +59,11 @@ async def get_indexing_status(
     return await service.get_indexing_status(job_id)
 
 
-@router_indexing.put("/status/{job_id}", response_model=IndexingJob)
+@router_indexing.put(
+    "/status/{job_id}",
+    response_model=IndexingJob,
+    dependencies=[Depends(PermissionChecker(Action.INDEXING_UPDATE))]
+)
 async def update_indexing_status(
     job_id: str,
     status_update: JobStatusUpdate,
