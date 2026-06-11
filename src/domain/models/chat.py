@@ -18,6 +18,8 @@ class Source(BaseModel):
 
     """Data structure for source."""
 
+    model_config = ConfigDict(from_attributes=True)
+
     title: str
     url: HttpUrl
     quote: str

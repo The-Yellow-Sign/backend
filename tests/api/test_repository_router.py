@@ -92,13 +92,13 @@ async def test_list_gitlab_repositories_success(ac, mock_index_service):
             "id": str(uuid4()),
             "name": "Repo 1",
             "path_with_namespace": "group/repo1",
-            "web_url": "https://gitlab.com/group/repo1"
+            "url": "https://gitlab.com/group/repo1"
         },
         {
             "id": str(uuid4()),
             "name": "Repo 2",
             "path_with_namespace": "group/repo2",
-            "web_url": "https://gitlab.com/group/repo2"
+            "url": "https://gitlab.com/group/repo2"
         }
     ]
     mock_index_service.list_repositories.return_value = mock_repos

@@ -208,9 +208,15 @@ async def test_get_chat_history_not_found(ac, mock_chat_service):
 async def test_send_message_success(ac, mock_chat_service, mock_user):
     """Test that endpoint returns the answer to the question (message) sent."""
     chat_id = uuid4()
+    repo_id = uuid4()
     question = "test_question"
 
-    payload = {"content": question}
+    payload = {
+        "repo_ids": [str(repo_id)],
+        "message": {
+            "content": question
+        }
+    }
 
     assistant_response = DomainMessage(
         id=uuid4(),
@@ -226,6 +232,7 @@ async def test_send_message_success(ac, mock_chat_service, mock_user):
     mock_chat_service.ask_question.assert_called_once_with(
         user_id=mock_user.id,
         chat_id=chat_id,
+        repo_ids=[repo_id],
         question=question
     )
 

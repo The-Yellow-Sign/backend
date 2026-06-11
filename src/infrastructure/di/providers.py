@@ -3,6 +3,7 @@ from typing import AsyncIterable
 
 from dishka import Provider, Scope, provide
 from fastapi import HTTPException, status
+from redis import ConnectionPool, Redis, asyncio as aioredis
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 
@@ -15,6 +16,8 @@ from src.domain.repositories import (
     IRoleRepository,
     IUserRepository,
 )
+from src.domain.repositories.cache_repo import ICacheRepository
+from src.infrastructure.cache.repositories.redis_cache_repo import RedisCacheRepository
 from src.infrastructure.db.repositories import (
     SqlAlchemyChatRepository,
     SqlAlchemyGitLabRepository,
@@ -114,9 +117,13 @@ class SericeProvider(Provider):
         return AuthService(user_repo=user_repo)
 
     @provide
-    def get_chat_service(self, chat_repo: IChatRepository) -> ChatService:
+    def get_chat_service(
+        self,
+        chat_repo: IChatRepository,
+        cache_repo: ICacheRepository
+    ) -> ChatService:
         """Get chat's service."""
-        return ChatService(chat_repo=chat_repo)
+        return ChatService(chat_repo=chat_repo, cache_repo=cache_repo)
 
     @provide
     def get_index_service(
@@ -135,3 +142,33 @@ class SericeProvider(Provider):
     ) -> AdminService:
         """Get admin service."""
         return AdminService(user_repo=user_repo, role_repo=role_repo)
+
+
+class CacheProvider(Provider):
+
+    """Provider for cache."""
+
+    @provide(scope=Scope.APP)
+    def get_redis_pool(self) -> ConnectionPool:
+        """Get Redis connection pool."""
+        return aioredis.ConnectionPool.from_url(
+            settings.REDIS_URL.get_secret_value(),
+            decode_responses=True
+        )
+
+    @provide(scope=Scope.APP)
+    async def get_redis_client(self, pool: ConnectionPool) -> AsyncIterable[Redis]:
+        """Get Redis client."""
+        client = aioredis.Redis(connection_pool=pool)
+        try:
+            yield client
+        finally:
+            await client.close()
+
+    @provide(scope=Scope.REQUEST)
+    async def get_cache_repository(
+        self,
+        client: Redis
+    ) -> ICacheRepository:
+        """Get Redis cache repository."""
+        return RedisCacheRepository(client)
